@@ -1,16 +1,27 @@
-# as-mon
-[![Crates.io](https://img.shields.io/crates/v/as-mon)](https://crates.io/crates/as-mon) 
-[![Docs.rs](https://docs.rs/as-mon/badge.svg)](https://docs.rs/as-mon) 
-[![Build](https://github.com/Ewpratten/as-mon/actions/workflows/build.yml/badge.svg)](https://github.com/Ewpratten/as-mon/actions/workflows/build.yml)
-[![Clippy](https://github.com/Ewpratten/as-mon/actions/workflows/clippy.yml/badge.svg)](https://github.com/Ewpratten/as-mon/actions/workflows/clippy.yml)
+# ASN Monitoring
 
+This repository contains a script that sends me a daily report about exposed services on all known hosts inside AS54041.
 
-repo description
+## How it works
 
-## Installation
+1. Query a certain `route-set` to determine which prefixes should be checked
+2. Dump all PTR records from Cloudflare that are in the corresponding zones for the prefixes from step 1
+3. Perform some network and DNS scans against the IPs
+4. Report the results via an email to NOC
 
-This crate can be installed via `cargo` with:
+## Running
 
-```sh
-cargo install as-mon
+The following environment variables must be passed through to the docker container:
+
+- `SENDGRID_API_KEY`: API key for SendGrid
+- `CLOUDFLARE_TOKEN`: Cloudflare token with read access to all zones
+- `NOTIFICATION_EMAIL_SOURCE`: Email address to send the report from
+- `NOTIFICATION_EMAIL_DEST`: Email address to send the report to
+- `TARGET_ROUTE_SET`: Route set to query for prefixes
+- `ASN`: The network ASN
+
+Then, run the container (don't forget to set the environment variables):
+
+```bash
+docker run --rm ewpratten/as-mon:latest
 ```
