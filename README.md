@@ -20,8 +20,8 @@ The following environment variables must be passed through to the docker contain
 - `TARGET_ROUTE_SET`: Route set to query for prefixes
 - `ASN`: The network ASN
 
-Then, run the container (don't forget to set the environment variables):
+Then, run the container:
 
 ```bash
-docker run --rm ewpratten/as-mon:latest
+docker run --rm -e SENDGRID_API_KEY -e CLOUDFLARE_TOKEN -e NOTIFICATION_EMAIL_SOURCE -e NOTIFICATION_EMAIL_DEST -e TARGET_ROUTE_SET -e ASN ewpratten/as-mon:latest
 ```
