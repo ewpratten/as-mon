@@ -238,12 +238,12 @@ def main():
     print("Running IPv6 nmap scan")
     nmap_v6 = subprocess.run(["nmap", "-6"] + [str(addr) for addr in used_v6],
                              capture_output=True)
-    nmap_v4_output = [
+    nmap_v4_output = "\n".join([
         f"> {line}" for line in nmap_v4.stdout.decode("utf-8").splitlines()
-    ]
-    nmap_v6_output = [
+    ])
+    nmap_v6_output = "\n".join([
         f"> {line}" for line in nmap_v6.stdout.decode("utf-8").splitlines()
-    ]
+    ])
 
     # Track all hosts that have a PTR record but no A or AAAA record
     hosts_without_dns: List[str] = []
@@ -252,10 +252,11 @@ def main():
         # Use NSLookup to check if the hostname has an A or AAAA record
         nslookup = subprocess.run(["nslookup", hostname], capture_output=True)
 
-        if len(nslookup.stdout.decode("utf-8").splitlines()) == 0:
+        if "can't find" in nslookup.stdout.decode("utf-8").lower():
             hosts_without_dns.append(
                 f" - {arpa_domain_to_ip(arpa)} {hostname}")
-
+    hosts_without_dns = "\n".join(hosts_without_dns)
+    
     # Construct the email body
     date_time = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     date = datetime.datetime.utcnow().strftime("%Y-%m-%d")
